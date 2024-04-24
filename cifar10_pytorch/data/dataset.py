@@ -67,3 +67,71 @@ def prepare_cifar10_dataset(cfg):
     )
 
     return dataloader_train, dataloader_test
+
+
+def get_cifar10_dataset(cfg):
+    """ prepare CIFAR10 dataset based on configuration"""
+
+    transform_train = build_transforms(cfg, is_train=True)
+    transform_test = build_transforms(cfg, is_train=False)
+
+
+    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                 std=[0.229, 0.224, 0.225])
+
+    # dataset_train = torchvision.datasets.CIFAR10(
+    #     root='./data',
+    #     train=True,
+    #     download=True,
+    #     transform=transform_train
+    # )
+    dataset_train = datasets.ImageFolder(
+            '/content/CINIC-10-Filtered_1K/train',
+            transform=transform_train
+    )
+    dataloader_train = torch.utils.data.DataLoader(
+        dataset_train,
+        batch_size=cfg.SOLVER.BATCHSIZE,
+        shuffle=True,
+        num_workers=cfg.SOLVER.NUM_WORKERS
+    )
+    dataset_test = torchvision.datasets.CIFAR10(
+        root='./data',
+        train=False,
+        download=True,
+        transform=transform_test
+    )
+    dataloader_test = torch.utils.data.DataLoader(
+        dataset_test,
+        batch_size=cfg.TEST.BATCHSIZE,
+        shuffle=False,
+        num_workers=cfg.SOLVER.NUM_WORKERS
+    )
+
+    return dataset_train, dataloader_train, dataset_test, dataloader_test
+
+def prepare_dataset_train(cfg, dataset):
+    """ prepare CIFAR10 dataset based on configuration"""
+
+    transform_train = build_transforms(cfg, is_train=True)
+    dataloader_train = torch.utils.data.DataLoader(
+        dataset,
+        batch_size=cfg.SOLVER.BATCHSIZE,
+        shuffle=True,
+        num_workers=cfg.SOLVER.NUM_WORKERS
+    )
+
+    return dataloader_train
+
+
+def prepare_dataset_test(cfg, dataset):
+    """ prepare CIFAR10 dataset based on configuration"""
+
+    dataloader_test = torch.utils.data.DataLoader(
+        dataset,
+        batch_size=cfg.TEST.BATCHSIZE,
+        shuffle=False,
+        num_workers=cfg.SOLVER.NUM_WORKERS
+    )
+
+    return dataloader_test
